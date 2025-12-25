@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurology Board Exam Simulator - Mich IE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn:hover:not(:disabled) { background-color: #f3f4f6; }
+        .selected { border-color: #2563eb; background-color: #eff6ff; }
+        .correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+        .sticky-header { position: sticky; top: 0; z-index: 50; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <div id="app" class="max-w-4xl mx-auto px-4 py-8">
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h1 class="text-3xl font-bold text-gray-900">Neurology Board Exam Simulator</h1>
+            <p class="text-blue-600 font-medium mt-1">Prepared by: Mich IE</p>
+            <p class="text-gray-500 text-sm">mitchybitsyie@gmail.com</p>
+            <div id="timer-display" class="mt-4 text-2xl font-mono font-bold text-red-600 bg-red-50 inline-block px-4 py-1 rounded-lg border border-red-100">Time: 50:00</div>
+        </header>
+
+        <div id="quiz-container" class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                <div id="progress-fill" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+
+            <div id="question-content">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="question-category" class="text-xs font-bold tracking-widest text-blue-500 uppercase">Category</span>
+                </div>
+                <h2 id="question-text" class="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">Loading question...</h2>
+                <div id="options-list" class="space-y-3">
+                    </div>
+            </div>
+
+            <div class="flex justify-between mt-8 border-t pt-6">
+                <button id="prev-btn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium disabled:opacity-50 transition hover:bg-gray-300">Previous</button>
+                <span id="question-counter" class="text-gray-500 self-center font-medium">Question 1 of 50</span>
+                <button id="next-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">Next</button>
+            </div>
+        </div>
+
+        <div id="submit-section" class="hidden text-center p-6 bg-blue-50 rounded-xl border-2 border-dashed border-blue-200 mb-6">
+            <p class="text-blue-800 mb-4 font-medium">You have reached the end of the exam.</p>
+            <button id="submit-exam-btn" class="px-10 py-4 bg-green-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-green-700 transition transform hover:scale-105">SUBMIT EXAM</button>
+        </div>
+
+        <div id="results-section" class="hidden bg-white rounded-xl shadow-lg p-8 text-center border-t-4 border-blue-600">
+            <h2 class="text-4xl font-bold text-gray-800 mb-2">Exam Results</h2>
+            <div id="score-display" class="text-7xl font-black text-blue-600 my-6">0/50</div>
+            <p id="percentage-display" class="text-2xl text-gray-600 mb-8 font-medium">0%</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="review-btn" class="px-8 py-3 bg-blue-100 text-blue-700 rounded-lg font-bold hover:bg-blue-200 transition">Review Answers</button>
+                <button id="retake-btn" class="px-8 py-3 bg-gray-800 text-white rounded-lg font-bold hover:bg-black transition">Retake Exam</button>
+            </div>
+        </div>
+
+        <footer class="text-center mt-12 text-gray-400 text-sm">
+            <p>&copy; 2024 Mich IE • Neural Nuggets Study Series</p>
+            <p>Contact: mitchybitsyie@gmail.com</p>
+        </footer>
+    </div>
+
+    <script>
+        const questionsDB = [
+            { question: "What is the primary definition of a Cerebrovascular Accident (CVA)?", options: ["Chronic brain inflammation", "Sudden loss of neurologic function due to interruption of blood flow", "Progressive loss of myelin in the CNS", "Increase in intracranial pressure due to trauma"], correct: 1, category: "CVA Basics" },
+            { question: "Which type of aphasia is characterized by impaired fluency but intact comprehension?", options: ["Wernicke's", "Conduction", "Broca's", "Global"], correct: 2, category: "CVA - Aphasia" },
+            { question: "A patient presents with contralateral hemiplegia and anesthesia specifically involving the face and upper extremity (UE). Which syndrome is most likely?", options: ["ACA Syndrome", "MCA Syndrome", "PCA Syndrome", "Weber Syndrome"], correct: 1, category: "CVA Syndromes" },
+            { question: "In Horner's Syndrome, which of the following is NOT a classic symptom?", options: ["Miosis", "Anhydrosis", "Ptosis", "Exophthalmos"], correct: 3, category: "CVA Syndromes" },
+            { question: "Which artery syndrome is associated with homonymous hemianopsia with macular sparing?", options: ["ACA", "MCA", "PCA", "Basilar"], correct: 2, category: "CVA Syndromes" },
+            { question: "A patient with ACA syndrome would most likely show greater motor deficit in which area?", options: ["Face", "Upper Extremity", "Lower Extremity", "Hand"], correct: 2, category: "CVA Syndromes" },
+            { question: "Which clinical sign involves the denial of one's disability?", options: ["Somatagnosia", "Anosognosia", "Agnosia", "Apraxia"], correct: 1, category: "CVA Manifestations" },
+            { question: "A 'locked-in' syndrome is typically associated with a lesion in which area?", options: ["Midbrain", "Pons", "Medulla", "Thalamus"], correct: 1, category: "CVA Syndromes" },
+            { question: "What is the primary cause of a 'Stroke in Evolution'?", options: ["Embolus", "Ruptured Aneurysm", "Progressive Thrombus formation", "Venous stasis"], correct: 2, category: "CVA Types" },
+            { question: "Which condition is defined by neurological deficits that resolve completely within 24 hours?", options: ["RIND", "CVA", "TIA", "Lacunar Stroke"], correct: 2, category: "CVA Types" },
+            { question: "A GCS score of 8 or less indicates what severity of TBI?", options: ["Mild", "Moderate", "Severe", "Critical"], correct: 2, category: "TBI Severity" },
+            { question: "In the Rancho Los Amigos Levels, Level IV is characterized by:", options: ["Confused - Appropriate", "Confused - Agitated", "Generalized Response", "Purposeful - Appropriate"], correct: 1, category: "TBI - Rancho Levels" },
+            { question: "Which MS type is characterized by a steady decline from onset with no clear relapses?", options: ["Relapsing Remitting", "Secondary Progressive", "Primary Progressive", "Progressive Relapsing"], correct: 2, category: "Multiple Sclerosis" },
+            { question: "What is Charcot's Triad in MS?", options: ["Tremor, Rigidity, Bradykinesia", "Scanning speech, Intention tremor, Nystagmus", "Ptosis, Miosis, Anhydrosis", "Fever, Pain, Redness"], correct: 1, category: "Multiple Sclerosis" },
+            { question: "Uthoff's phenomenon refers to the exacerbation of MS symptoms by:", options: ["Cold", "Heat", "Stress", "Exercise"], correct: 1, category: "Multiple Sclerosis" },
+            { question: "Which spinal cord syndrome results from a hyperextension injury and affects the UE more than the LE?", options: ["Anterior Cord", "Posterior Cord", "Central Cord", "Brown-Sequard"], correct: 2, category: "SCI Syndromes" },
+            { question: "In Brown-Sequard Syndrome, what is lost contralaterally?", options: ["Motor function", "Proprioception", "Pain and Temperature", "Vibration"], correct: 2, category: "SCI Syndromes" },
+            { question: "An ASIA Grade B impairment indicates:", options: ["Complete: No motor or sensory", "Incomplete: Sensory but not motor function preserved below level", "Incomplete: Motor function preserved (Grade <3)", "Normal"], correct: 1, category: "SCI - ASIA Scale" },
+            { question: "Autonomic Dysreflexia is typically triggered by:", options: ["Low Blood Pressure", "Bladder Distention", "Muscle Atrophy", "Hypothermia"], correct: 1, category: "SCI Complications" },
+            { question: "A patient who can use a manual wheelchair with friction-surface handrims likely has what level of SCI?", options: ["C4", "C5", "C6", "C7-C8"], correct: 2, category: "SCI Levels" },
+            { question: "What is the gold standard for diagnosing a CVA acutely to rule out hemorrhage?", options: ["MRI", "CT Scan", "X-Ray", "PET Scan"], correct: 1, category: "CVA Diagnostics" },
+            { question: "Which MS medication is primarily used to manage ACUTE attacks?", options: ["Interferons", "Corticosteroids", "Baclofen", "Copaxone"], correct: 1, category: "MS Pharmacology" },
+            { question: "Lhermitte's sign is described as:", options: ["Pain on eye movement", "Electric-like shock down the spine with neck flexion", "Inability to look upward", "Tremor during voluntary movement"], correct: 1, category: "Multiple Sclerosis" },
+            { question: "A lesion in the Post-limb of the Internal Capsule typically results in:", options: ["Pure Sensory Stroke", "Pure Motor Stroke", "Ataxic Hemiparesis", "Dysarthria-Clumsy Hand"], correct: 1, category: "Lacunar Strokes" },
+            { question: "Prosopagnosia is the inability to:", options: ["Recognize objects", "Recognize faces", "Distinguish colors", "Read words"], correct: 1, category: "CVA Manifestations" },
+            { question: "Wallenberg Syndrome (Lateral Medullary Syndrome) is associated with which artery?", options: ["AICA", "PICA", "SCA", "PCA"], correct: 1, category: "CVA Syndromes" },
+            { question: "In TBI, a 'Counter-coup' injury occurs:", options: ["At the point of impact", "Opposite the point of impact", "Due to rotational forces", "Only in open head injuries"], correct: 1, category: "TBI Basics" },
+            { question: "A GCS score of 13-15 is classified as:", options: ["Mild", "Moderate", "Severe", "Normal"], correct: 0, category: "TBI Severity" },
+            { question: "Which Rancho Level involves a 'Robot-like' behavior with new learning possible but limited?", options: ["Level V", "Level VI", "Level VII", "Level VIII"], correct: 2, category: "TBI - Rancho Levels" },
+            { question: "What is the first reflex to return after Spinal Shock?", options: ["Patellar", "Achilles", "Bulbocavernosus", "Grasp"], correct: 2, category: "SCI Basics" },
+            { question: "Saddle anesthesia is a hallmark sign of:", options: ["Central Cord Syndrome", "Cauda Equina Syndrome", "Anterior Cord Syndrome", "Brown-Sequard Syndrome"], correct: 1, category: "SCI Syndromes" },
+            { question: "Which wheelchair control is most appropriate for a C4 SCI patient?", options: ["Manual handrims", "Standard joystick", "Sip-and-puff / Head control", "Standard manual"], correct: 2, category: "SCI Levels" },
+            { question: "Heterotopic Ossification in SCI most commonly occurs at the:", options: ["Shoulder", "Elbow", "Hip", "Knee"], correct: 2, category: "SCI Complications" },
+            { question: "Gegenhalten syndrome (paratonia) is associated with which CVA syndrome?", options: ["MCA", "PCA", "ACA", "Vertebrobasilar"], correct: 2, category: "CVA Syndromes" },
+            { question: "In the ASIA scale, 'Neurological Level of Injury' is the most caudal segment where:", options: ["Motor is 3/5", "Sensory is intact", "Both motor and sensory are normal", "Motor is 5/5"], correct: 2, category: "SCI - ASIA Scale" },
+            { question: "Millard-Gubler Syndrome involves which cranial nerves?", options: ["CN III, IV", "CN V, VI", "CN VI, VII", "CN IX, X"], correct: 2, category: "CVA Syndromes" },
+            { question: "Ideational apraxia is the inability to:", options: ["Perform a task on command", "Understand the concept of a task", "Mimic movements", "Dress oneself"], correct: 1, category: "CVA Manifestations" },
+            { question: "A patient with a right-sided CVA (Left Hemiplegia) is typically:", options: ["Slow and cautious", "Quick and impulsive", "Aphasic", "Highly aware of deficits"], correct: 1, category: "CVA Manifestations" },
+            { question: "Pounding headache and profuse sweating above the lesion level are signs of:", options: ["Hypoglycemia", "Autonomic Dysreflexia", "Orthostatic Hypotension", "Spinal Shock"], correct: 1, category: "SCI Complications" },
+            { question: "Which method is used for bladder emptying in a Lower Motor Neuron (LMN) bladder?", options: ["Suprapubic tapping", "Crede Maneuver / Valsalva", "Digital stimulation", "Ice water test"], correct: 1, category: "SCI Management" },
+            { question: "A 'Pure Motor Hemiparesis' lacunar stroke usually affects the:", options: ["Thalamus", "Posterior limb of Internal Capsule", "Pons", "Cerebellum"], correct: 1, category: "Lacunar Strokes" },
+            { question: "At what SCI level does a patient gain the ability to perform an independent sliding board transfer?", options: ["C4", "C5", "C6", "T1"], correct: 2, category: "SCI Levels" },
+            { question: "Which term describes the inability to recognize objects through touch?", options: ["Anosognosia", "Astereognosis (Tactile Agnosia)", "Apraxia", "Ataxia"], correct: 1, category: "CVA Manifestations" },
+            { question: "The 'Tenodesis Grip' is essential for which SCI level?", options: ["C5", "C6", "C7", "C8"], correct: 1, category: "SCI Levels" },
+            { question: "Which cord syndrome results from a flexion injury and causes loss of motor and pain/temp but preserves proprioception?", options: ["Anterior Cord", "Posterior Cord", "Central Cord", "Brown-Sequard"], correct: 0, category: "SCI Syndromes" },
+            { question: "A patient at Rancho Level II would exhibit:", options: ["Specific response to pain", "Non-specific/Generalized response to stimuli", "Purposeful movement", "Agitation"], correct: 1, category: "TBI - Rancho Levels" },
+            { question: "The 'Gold Standard' for diagnosing MS and identifying plaques is:", options: ["CT", "MRI", "Lumbar Puncture", "EEG"], correct: 1, category: "Multiple Sclerosis" },
+            { question: "Hemiballismus is most commonly associated with a stroke in the:", options: ["Subthalamic Nucleus", "Pons", "Medulla", "Occipital Lobe"], correct: 0, category: "CVA Manifestations" },
+            { question: "A TIA typically resolves within:", options: ["24 hours", "72 hours", "3 weeks", "1 hour"], correct: 0, category: "CVA Types" },
+            { question: "What is the primary cause of an Embolic Stroke?", options: ["Plaque buildup in situ", "A blood clot traveling from elsewhere (e.g., heart)", "Ruptured vessel", "Low blood pressure"], correct: 1, category: "CVA Types" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questionsDB.length).fill(null);
+        let examSubmitted = false;
+        let timerInterval;
+        let timeLeft = 50 * 60; // 50 minutes
+
+        const qText = document.getElementById('question-text');
+        const qCat = document.getElementById('question-category');
+        const qCounter = document.getElementById('question-counter');
+        const optionsList = document.getElementById('options-list');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressFill = document.getElementById('progress-fill');
+        const quizContainer = document.getElementById('quiz-container');
+        const submitSection = document.getElementById('submit-section');
+        const resultsSection = document.getElementById('results-section');
+        const timerDisplay = document.getElementById('timer-display');
+
+        function initQuiz() {
+            renderQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Time: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function renderQuestion() {
+            const q = questionsDB[currentQuestionIndex];
+            qText.textContent = q.question;
+            qCat.textContent = q.category;
+            qCounter.textContent = `Question ${currentQuestionIndex + 1} of ${questionsDB.length}`;
+            
+            const progress = ((currentQuestionIndex + 1) / questionsDB.length) * 100;
+            progressFill.style.width = `${progress}%`;
+
+            optionsList.innerHTML = '';
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 border-2 rounded-lg transition font-medium ${userAnswers[currentQuestionIndex] === index ? 'selected' : 'border-gray-200'}`;
+                btn.innerHTML = `<span class="inline-block w-8 font-bold">${String.fromCharCode(65 + index)}.</span> ${opt}`;
+                
+                if (examSubmitted) {
+                    btn.disabled = true;
+                    if (index === q.correct) btn.classList.add('correct');
+                    if (userAnswers[currentQuestionIndex] === index && index !== q.correct) btn.classList.add('incorrect');
+                } else {
+                    btn.onclick = () => selectOption(index);
+                }
+                optionsList.appendChild(btn);
+            });
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.textContent = currentQuestionIndex === questionsDB.length - 1 ? 'Go to Finish' : 'Next';
+            
+            if (currentQuestionIndex === questionsDB.length - 1 && !examSubmitted) {
+                submitSection.classList.remove('hidden');
+            } else {
+                submitSection.classList.add('hidden');
+            }
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestionIndex] = index;
+            renderQuestion();
+        }
+
+        nextBtn.onclick = () => {
+            if (currentQuestionIndex < questionsDB.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                window.scrollTo(0, 0);
+            }
+        };
+
+        prevBtn.onclick = () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+                window.scrollTo(0, 0);
+            }
+        };
+
+        document.getElementById('submit-exam-btn').onclick = submitExam;
+
+        function submitExam() {
+            if(!confirm("Are you sure you want to submit your exam?")) return;
+            examSubmitted = true;
+            clearInterval(timerInterval);
+            quizContainer.classList.add('hidden');
+            submitSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            
+            let score = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questionsDB[i].correct) score++;
+            });
+
+            document.getElementById('score-display').textContent = `${score}/${questionsDB.length}`;
+            document.getElementById('percentage-display').textContent = `${Math.round((score/questionsDB.length)*100)}%`;
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('review-btn').onclick = () => {
+            resultsSection.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            renderQuestion();
+        };
+
+        document.getElementById('retake-btn').onclick = () => {
+            if(confirm("Start a new attempt? All current answers will be cleared.")) {
+                location.reload();
+            }
+        };
+
+        initQuiz();
+    </script>
+</body>
+</html>
