@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuroanatomy 50 - Mich IE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn:hover:not(:disabled) { background-color: #f5f3ff; border-color: #7c3aed; }
+        .selected { border-color: #7c3aed; background-color: #ede9fe; font-weight: bold; }
+        .correct { background-color: #d1fae5 !important; border-color: #059669 !important; color: #065f46; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans">
+    <div id="app" class="max-w-4xl mx-auto px-4 py-6">
+        <header class="text-center mb-6 bg-white p-6 rounded-2xl shadow-sm border-b-4 border-violet-500">
+            <h1 class="text-3xl font-black text-slate-800 uppercase">Neuroanatomy 50</h1>
+            <p class="text-violet-600 font-bold tracking-widest text-xs mt-1">Mich IE • Sir Omar Lecture Series</p>
+        </header>
+
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <span id="question-counter" class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">Question 1/50</span>
+                <div id="timer" class="text-violet-700 font-mono font-bold text-lg">60:00</div>
+            </div>
+            
+            <div class="w-full bg-slate-100 rounded-full h-3 mb-8">
+                <div id="progress-bar" class="bg-violet-500 h-3 rounded-full transition-all duration-500" style="width: 2%"></div>
+            </div>
+
+            <div id="question-content" class="min-h-[300px]">
+                <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-snug mb-8">Loading...</h2>
+                <div id="options-list" class="grid gap-3"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
+                <button id="prev-btn" class="px-6 py-3 bg-slate-200 text-slate-600 rounded-xl font-bold disabled:opacity-30">Previous</button>
+                <button id="next-btn" class="px-8 py-3 bg-violet-600 text-white rounded-xl font-bold shadow-lg hover:bg-violet-700 active:scale-95 transition">Next Question</button>
+            </div>
+        </div>
+
+        <div id="results-section" class="hidden bg-white rounded-3xl shadow-2xl p-10 text-center">
+            <h2 class="text-5xl font-black text-slate-900 mb-4">SCORE</h2>
+            <div id="score-display" class="text-8xl font-black text-violet-600 my-8">0/50</div>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="location.reload()" class="px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold">Retake</button>
+                <a href="index.html" class="px-10 py-4 bg-slate-200 text-slate-700 rounded-2xl font-bold">Menu</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionsDB = [
+            { q: "What is the largest branch of the Cervical Plexus?", a: ["Phrenic Nerve", "Radial Nerve", "Axillary Nerve", "Ansa Cervicalis"], c: 0 },
+            { q: "The Radial Nerve is also known as the:", a: ["Anterior Crural Nerve", "Musculospiral Nerve", "Zero Nerve", "Interosseous Nerve"], c: 1 },
+            { q: "Which nerve wraps around the spiral groove of the humerus?", a: ["Ulnar", "Median", "Radial", "Axillary"], c: 2 },
+            { q: "Guttering and atrophy of the Interossei is primarily a sign of which nerve injury?", a: ["Radial", "Median", "Ulnar", "Phrenic"], c: 2 },
+            { q: "The adult spinal cord typically ends (Conus Medullaris) at which level?", a: ["L1-L2", "L3-L4", "L5-S1", "T12"], c: 0 },
+            { q: "The 'Largest Branch' of the Lumbar Plexus is the:", a: ["Obturator Nerve", "Femoral Nerve", "Sciatic Nerve", "Common Peroneal"], c: 1 },
+            { q: "The Sciatic Nerve originates from which levels?", a: ["C5-T1", "L2-L4", "L4-S3", "S2-S4"], c: 2 },
+            { q: "Which neurotransmitter is released by ALL pre-ganglionic autonomic terminals?", a: ["Norepinephrine", "Dopamine", "Acetylcholine", "Serotonin"], c: 2 },
+            { q: "The 'Fight or Flight' response is controlled by which division?", a: ["Parasympathetic", "Sympathetic", "Somatic", "Enteric"], c: 1 },
+            { q: "Which ANS division is known as the Thoracolumbar division?", a: ["Sympathetic", "Parasympathetic", "Cranial", "Sacral"], c: 0 },
+            { q: "In the 'Point and Shoot' mnemonic, which division is responsible for 'Pointing' (Erection)?", a: ["Sympathetic", "Parasympathetic", "Somatic", "Vagus"], c: 1 },
+            { q: "Horner's Syndrome involves a triad of Ptosis, Miosis, and:", a: ["Mydriasis", "Anhidrosis", "Tachycardia", "Hypertension"], c: 1 },
+            { q: "Sympathetic stimulation of the heart causes:", a: ["Bradycardia", "Tachycardia", "No change", "Decreased contractility"], c: 1 },
+            { q: "The Rule of 1973 for the Parasympathetic division includes which Cranial Nerves?", a: ["1, 9, 7, 3", "3, 7, 9, 10", "5, 7, 9, 12", "1, 2, 3, 4"], c: 1 },
+            { q: "Which Cranial Nerve is the 'Zero Nerve'?", a: ["CN I", "CN XIII", "CN XIV", "CN 0"], c: 1 },
+            { q: "The 'SHET' mnemonic for Diencephalon structures stands for Subthalamus, Hypothalamus, Epithalamus, and:", a: ["Stria Terminalis", "Thalamus", "Substantia Nigra", "Septum Pellucidum"], c: 1 },
+            { q: "Which ventricle is located in the Diencephalon?", a: ["Lateral", "Third", "Fourth", "Sylvian"], c: 1 },
+            { q: "CSF is primarily produced in the:", a: ["Arachnoid Villi", "Choroid Plexus", "Cerebral Aqueduct", "Foramen of Luschka"], c: 1 },
+            { q: "What is the total normal volume of CSF in an adult?", a: ["50 mL", "150 mL", "500 mL", "1000 mL"], c: 1 },
+            { q: "The 'Sunset Eye Sign' is associated with:", a: ["CVA", "Hydrocephalus", "Parkinson's", "SCI"], c: 1 },
+            { q: "The Left Hemisphere is often associated with the 'MALL' mnemonic. What does 'A' stand for?", a: ["Artistic", "Analytical", "Abstract", "Agnosia"], c: 1 },
+            { q: "The largest commissural fiber connecting the two hemispheres is the:", a: ["Internal Capsule", "Corpus Callosum", "Anterior Commissure", "Fornix"], c: 1 },
+            { q: "The Insula is also known as the:", a: ["Island of Reil", "Island of Roland", "Sylvian Island", "Broca's Area"], c: 0 },
+            { q: "Which artery supplies the medial aspect of the frontal and parietal lobes?", a: ["MCA", "ACA", "PCA", "PICA"], c: 1 },
+            { q: "A lesion in the Thalamus can result in Dejerine-Roussy Syndrome, also known as:", a: ["Wallenberg Syndrome", "Thalamic Pain Syndrome", "Weber Syndrome", "Locked-in Syndrome"], c: 1 },
+            { q: "Wallenberg Syndrome (Lateral Medullary Syndrome) is caused by occlusion of the:", a: ["ACA", "MCA", "PICA", "AICA"], c: 2 },
+            { q: "Millard-Gubler Syndrome involves a lesion in the:", a: ["Midbrain", "Pons", "Medulla", "Thalamus"], c: 1 },
+            { q: "Which Cranial Nerve is the ONLY one to emerge from the dorsum of the brainstem?", a: ["CN III", "CN IV", "CN VI", "CN VII"], c: 1 },
+            { q: "Tic Douloureux is another name for:", a: ["Bell's Palsy", "Trigeminal Neuralgia", "Tic Disorder", "Meniere's"], c: 1 },
+            { q: "Which muscle OPENS the mouth?", a: ["Masseter", "Temporalis", "Medial Pterygoid", "Lateral Pterygoid"], c: 3 },
+            { q: "Crocodile Tears (Bogorad’s Syndrome) is a complication of which nerve recovery?", a: ["CN V", "CN VII", "CN IX", "CN X"], c: 1 },
+            { q: "The 'SO-TA-HA-CA' level for Community Ambulation in SCI is:", a: ["T2-T11", "T12-L2", "L3 and down", "C7"], c: 2 },
+            { q: "In SCI, 'Therapeutic Ambulation' (TA) occurs at which levels?", a: ["T2-T11", "T12-L2", "L3", "C5"], c: 0 },
+            { q: "The 'Bell-Magendie Law' states the Ventral Root is:", a: ["Sensory", "Motor", "Both", "Autonomic"], c: 1 },
+            { q: "Which dermatome is at the level of the Umbilicus?", a: ["T4", "T7", "T10", "L1"], c: 2 },
+            { q: "Wrist Extensors (ECRL/B) correspond to which myotome level?", a: ["C5", "C6", "C7", "C8"], c: 1 },
+            { q: "The Patellar Reflex (Knee Jerk) tests which spinal levels?", a: ["L2-L4", "L4-S1", "S1-S2", "L1-L2"], c: 0 },
+            { q: "Which is the thickest and fastest nerve fiber?", a: ["A-alpha", "A-beta", "A-delta", "C-fiber"], c: 0 },
+            { q: "Slow pain is carried by which fibers?", a: ["A-delta", "B-fibers", "C-fibers", "A-gamma"], c: 2 },
+            { q: "Prosencephalon is the embryological term for the:", a: ["Forebrain", "Midbrain", "Hindbrain", "Spinal Cord"], c: 0 },
+            { q: "The Rhombencephalon divides into the Metencephalon and the:", a: ["Telencephalon", "Myelencephalon", "Diencephalon", "Mesencephalon"], c: 1 },
+            { q: "Which brain structure controls temperature, thirst, and hunger?", a: ["Thalamus", "Hypothalamus", "Basal Ganglia", "Cerebellum"], c: 1 },
+            { q: "Anterior Cord Syndrome usually results in loss of motor and pain/temp but preserves:", a: ["Proprioception/Vibration", "Motor control", "Light touch", "Reflexes"], c: 0 },
+            { q: "Brown-Sequard Syndrome involves a hemisection of the cord. Pain/Temp is lost on the:", a: ["Ipsilateral side", "Contralateral side", "Both sides", "Neither side"], c: 1 },
+            { q: "Autonomic Dysreflexia is a medical emergency for SCI patients above which level?", a: ["C5", "T6", "T12", "L2"], c: 1 },
+            { q: "Which Cranial Nerve is responsible for the gag reflex (sensory limb)?", a: ["CN VII", "CN IX", "CN X", "CN XII"], c: 1 },
+            { q: "A 'Marcus Gunn Pupil' indicates a lesion in which nerve?", a: ["CN II", "CN III", "CN IV", "CN VI"], c: 0 },
+            { q: "The 'Rule of 1975' for mixed nerves includes CNs 5, 7, 9, and:", a: ["8", "10", "11", "12"], c: 1 },
+            { q: "Which artery occlusion leads to 'Thalamic Pain Syndrome'?", a: ["ACA", "MCA", "PCA", "Basilar"], c: 2 },
+            { q: "The Phrenic nerve originates from which levels?", a: ["C1-C2", "C3-C5", "C5-C7", "T1-T2"], c: 1 }
+        ];
+
+        let currentIdx = 0;
+        let answers = new Array(questionsDB.length).fill(null);
+        let time = 60 * 60;
+        let submitted = false;
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if(submitted) { clearInterval(interval); return; }
+                const m = Math.floor(time / 60);
+                const s = time % 60;
+                timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if(time <= 0) { clearInterval(interval); submit(); }
+                time--;
+            }, 1000);
+        }
+
+        function render() {
+            const q = questionsDB[currentIdx];
+            document.getElementById('question-text').textContent = `${currentIdx + 1}. ${q.q}`;
+            document.getElementById('question-counter').textContent = `Question ${currentIdx + 1}/${questionsDB.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questionsDB.length) * 100}%`;
+            
+            const list = document.getElementById('options-list');
+            list.innerHTML = '';
+            q.a.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-5 border-2 rounded-2xl transition flex items-center gap-4 ${answers[currentIdx] === i ? 'selected' : 'border-slate-100 bg-slate-50'}`;
+                btn.innerHTML = `<span class="h-8 w-8 flex items-center justify-center rounded-full bg-white border font-bold text-slate-400">${String.fromCharCode(65+i)}</span> <span class="text-slate-700 font-medium">${opt}</span>`;
+                if(!submitted) btn.onclick = () => { answers[currentIdx] = i; render(); };
+                else {
+                    btn.disabled = true;
+                    if(i === q.c) btn.classList.add('correct');
+                    if(answers[currentIdx] === i && i !== q.c) btn.classList.add('incorrect');
+                }
+                list.appendChild(btn);
+            });
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').textContent = currentIdx === questionsDB.length - 1 ? (submitted ? 'Results' : 'Submit') : 'Next Question';
+        }
+
+        document.getElementById('next-btn').onclick = () => {
+            if(currentIdx < questionsDB.length - 1) { currentIdx++; render(); }
+            else if(!submitted) { if(confirm("Submit Exam?")) { submitted = true; showResults(); } }
+            else showResults();
+        };
+
+        document.getElementById('prev-btn').onclick = () => { if(currentIdx > 0) { currentIdx--; render(); } };
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            let score = 0;
+            answers.forEach((ans, i) => { if(ans === questionsDB[i].c) score++; });
+            document.getElementById('score-display').textContent = `${score}/${questionsDB.length}`;
+        }
+
+        startTimer();
+        render();
+    </script>
+</body>
+</html>
