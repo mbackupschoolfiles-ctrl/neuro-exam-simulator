@@ -3,140 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gait Analysis Exam - Mich IE</title>
+    <title>Gait 50 - Mich IE Board Review</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .option-btn:hover:not(:disabled) { background-color: #f3f4f6; }
-        .selected { border-color: #10b981; background-color: #ecfdf5; }
-        .correct { background-color: #d1fae5 !important; border-color: #059669 !important; }
-        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+        .option-btn:hover:not(:disabled) { background-color: #f0fdf4; border-color: #10b981; }
+        .selected { border-color: #059669; background-color: #d1fae5; font-weight: bold; }
+        .correct { background-color: #d1fae5 !important; border-color: #059669 !important; color: #065f46; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
-    <div id="app" class="max-w-4xl mx-auto px-4 py-8">
-        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-emerald-100">
-            <h1 class="text-3xl font-bold text-slate-900 uppercase tracking-tight">Gait Analysis Exam</h1>
-            <p class="text-emerald-600 font-medium mt-1">Mich IE • Board Review 2024</p>
-            <div id="timer-display" class="mt-4 text-2xl font-mono font-bold text-emerald-600 bg-emerald-50 inline-block px-4 py-1 rounded-lg border border-emerald-100">Time: 40:00</div>
+<body class="bg-slate-100 min-h-screen font-sans">
+    <div id="app" class="max-w-4xl mx-auto px-4 py-6">
+        <header class="text-center mb-6 bg-white p-6 rounded-2xl shadow-sm border-b-4 border-emerald-500">
+            <h1 class="text-3xl font-black text-slate-800 uppercase italic">Gait Mastery 50</h1>
+            <p class="text-emerald-600 font-bold uppercase tracking-widest text-xs mt-1">Mich IE • Physical Therapy Board Simulator</p>
         </header>
 
-        <div id="quiz-container" class="bg-white rounded-xl shadow-md p-6 mb-6">
-            <div id="progress-bar" class="w-full bg-slate-200 rounded-full h-2.5 mb-6">
-                <div id="progress-fill" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <span id="question-counter" class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">Question 1/50</span>
+                <div id="timer" class="text-emerald-700 font-mono font-bold text-lg bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-100">60:00</div>
+            </div>
+            
+            <div class="w-full bg-slate-100 rounded-full h-3 mb-8">
+                <div id="progress-bar" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 2%"></div>
             </div>
 
-            <div id="question-content">
-                <div class="flex justify-between items-center mb-2">
-                    <span id="question-category" class="text-xs font-bold tracking-widest text-emerald-500 uppercase">Gait Mechanics</span>
-                </div>
-                <h2 id="question-text" class="text-xl font-semibold mb-6 text-slate-800 leading-relaxed">Loading...</h2>
-                <div id="options-list" class="space-y-3"></div>
+            <div id="question-content" class="min-h-[300px]">
+                <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-snug mb-8">Loading...</h2>
+                <div id="options-list" class="grid gap-3"></div>
             </div>
 
-            <div class="flex justify-between mt-8 border-t pt-6">
-                <button id="prev-btn" class="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium disabled:opacity-50 hover:bg-slate-300">Previous</button>
-                <span id="question-counter" class="text-slate-500 self-center font-medium">Question 1 of 20</span>
-                <button id="next-btn" class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700">Next</button>
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
+                <button id="prev-btn" class="px-6 py-3 bg-slate-200 text-slate-600 rounded-xl font-bold disabled:opacity-30">Previous</button>
+                <button id="next-btn" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-95 transition">Next Question</button>
             </div>
         </div>
 
-        <div id="results-section" class="hidden bg-white rounded-xl shadow-lg p-8 text-center border-t-4 border-emerald-600">
-            <h2 class="text-4xl font-bold text-slate-800 mb-2">Final Score</h2>
-            <div id="score-display" class="text-7xl font-black text-emerald-600 my-6">0/20</div>
-            <p id="percentage-display" class="text-2xl text-slate-600 mb-8">0%</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button onclick="location.reload()" class="px-8 py-3 bg-slate-800 text-white rounded-lg font-bold hover:bg-black">Retake Exam</button>
-                <a href="index.html" class="px-8 py-3 bg-slate-200 text-slate-700 rounded-lg font-bold hover:bg-slate-300">Back to Menu</a>
+        <div id="results-section" class="hidden bg-white rounded-3xl shadow-2xl p-10 text-center">
+            <h2 class="text-5xl font-black text-slate-900 mb-4 italic">FINAL SCORE</h2>
+            <div id="score-display" class="text-8xl font-black text-emerald-600 my-8">0/50</div>
+            <p id="feedback" class="text-lg text-slate-500 mb-10 font-medium italic"></p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="location.reload()" class="px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg">Retake 50</button>
+                <a href="index.html" class="px-10 py-4 bg-slate-200 text-slate-700 rounded-2xl font-bold text-lg">Main Menu</a>
             </div>
         </div>
     </div>
 
     <script>
         const questionsDB = [
-            { question: "What is the defined 'Gait Cycle'?", options: ["Interval from HS to HS of opposite foot", "Interval from HS to HS of the same foot", "The swing phase only", "The period of double support"], correct: 1, category: "Basics" },
-            { question: "In a normal gait cycle, the Stance Phase accounts for what percentage?", options: ["20%", "40%", "60%", "80%"], correct: 2, category: "Phases" },
-            { question: "Vertical displacement of the COG is at its LOWEST point during:", options: ["Midstance", "Initial Contact", "Double Limb Support", "Midswing"], correct: 2, category: "COG Kinematics" },
-            { question: "What is the normal value for 'Step Width' (Base Width)?", options: ["7 degrees", "28 inches", "2-4 inches (5-10 cm)", "56 inches"], correct: 2, category: "Spatial Parameters" },
-            { question: "A 'Fick Angle' (Toe-out angle) of 7 degrees is considered:", options: ["Abnormal (Toe-in)", "Normal", "Excessive valgus", "Sign of hip internal rotation"], correct: 1, category: "Spatial Parameters" },
-            { question: "Which nerve is injured in a patient with a 'Trendelenburg Gait'?", options: ["Inferior Gluteal Nerve", "Superior Gluteal Nerve", "Femoral Nerve", "Deep Peroneal Nerve"], correct: 1, category: "Nerve Injuries" },
-            { question: "A 'Backward Lurch' or hyperextension of the spine during HS/IC indicates weakness in which muscle?", options: ["Gluteus Medius", "Gluteus Maximus", "Quadriceps", "Gastrocnemius"], correct: 1, category: "Gait Deviations" },
-            { question: "A 'Foot Slap' during the Loading Response (Foot Flat) phase is a sign of injury to which nerve?", options: ["Superficial Peroneal Nerve", "Deep Peroneal Nerve", "Tibial Nerve", "Sciatic Nerve"], correct: 1, category: "Nerve Injuries" },
-            { question: "Which phase requires 60-70 degrees of Great Toe extension (DF)?", options: ["Heel Strike", "Midstance", "Pre-swing (Push-off)", "Initial Swing"], correct: 2, category: "Joint Kinematics" },
-            { question: "A 'Festinating Gait' (increasing speed, unable to stop) is most common in:", options: ["CVA", "Parkinson's Disease", "SCI", "Muscular Dystrophy"], correct: 1, category: "Pathological Gait" },
-            { question: "Vertical displacement of the COG is at its HIGHEST point during:", options: ["Heel Strike", "Midstance", "Double Support", "Deceleration"], correct: 1, category: "COG Kinematics" },
-            { question: "Normal 'Step Length' is approximately:", options: ["14 inches", "28 inches", "56 inches", "7 inches"], correct: 1, category: "Spatial Parameters" },
-            { question: "Which determinant of gait involves side-to-side pelvic movement toward the stance limb?", options: ["Pelvic Rotation", "Pelvic Tilt", "Lateral Pelvic Shift", "Knee-Ankle Interaction"], correct: 2, category: "Determinants" },
-            { question: "A 'Forward Lurch' and knee buckling compensation indicates weakness in:", options: ["Gluteus Medius", "Quadriceps", "Hamstrings", "Dorsiflexors"], correct: 1, category: "Gait Deviations" },
-            { question: "Which RLA term is equivalent to 'Heel Strike'?", options: ["Initial Contact", "Loading Response", "Terminal Stance", "Pre-swing"], correct: 0, category: "Terminology" },
-            { question: "Which spatial parameter is exactly double the Step Length?", options: ["Step Width", "Stride Length", "Fick Angle", "Lateral Shift"], correct: 1, category: "Spatial Parameters" },
-            { question: "Double Limb Support accounts for what percentage of the walking cycle?", options: ["10%", "20%", "40%", "60%"], correct: 1, category: "Phases" },
-            { question: "A 'Waddling Gait' is a series of Trendelenburg signs caused by (B) weakness of:", options: ["Gluteus Maximus", "Gluteus Medius", "Quadriceps", "Iliopsoas"], correct: 1, category: "Gait Deviations" },
-            { question: "In 'Antalgic Gait', what is the primary observation?", options: ["Shortened swing phase", "Shortened stance phase on painful limb", "Vaulting", "Circumduction"], correct: 1, category: "Pathological Gait" },
-            { question: "The 'Swing Phase' (OKC phase) accounts for what percentage of gait?", options: ["20%", "40%", "60%", "80%"], correct: 1, category: "Phases" }
+            // BASICS & PHASES
+            { q: "The gait cycle is defined as the interval from:", a: ["Heel strike to heel strike of opposite foot", "Heel strike to heel strike of same foot", "Foot flat to toe off", "Initial contact to midswing"], c: 1 },
+            { q: "In a normal walking cycle, the Stance Phase accounts for:", a: ["20%", "40%", "60%", "80%"], c: 2 },
+            { q: "The Swing Phase is also known as the:", a: ["CKC Phase", "OKC Phase", "Single Limb Support", "Double Limb Support"], c: 1 },
+            { q: "Which period of gait is the most stable because the COG is within the BOS?", a: ["Single limb support", "Double limb support", "Initial swing", "Midstance"], c: 1 },
+            { q: "Double limb support accounts for what percentage of the gait cycle?", a: ["10%", "20%", "40%", "60%"], c: 1 },
+            
+            // SPATIAL PARAMETERS (From Sir Gio's Notes)
+            { q: "What is the normal value for Step Width (Base Width)?", a: ["1-2 inches", "2-4 inches", "5-7 inches", "10 inches"], c: 1 },
+            { q: "What is the normal value for Step Length?", a: ["14 inches", "28 inches", "56 inches", "7 inches"], c: 1 },
+            { q: "Stride length is equal to:", a: ["Step width x 2", "Step length x 2", "14 inches", "Base of support"], c: 1 },
+            { q: "The normal 'Fick Angle' or Toe-out angle is:", a: ["0 degrees", "7 degrees", "15 degrees", "25 degrees"], c: 1 },
+            { q: "What is the normal range for Lateral Pelvic Shift?", a: ["1-2 cm", "2.5 - 5 cm", "8-10 cm", "None"], c: 1 },
+            
+            // COG KINEMATICS
+            { q: "Vertical displacement of the COG is HIGHEST at which phase?", a: ["Heel strike", "Midstance", "Double support", "Deceleration"], c: 1 },
+            { q: "Vertical displacement of the COG is LOWEST at which phase?", a: ["Midstance", "Initial swing", "Double limb support", "Terminal stance"], c: 2 },
+            { q: "What is the normal vertical pelvic shift (displacement)?", a: ["1 cm", "2 cm", "5 cm", "10 cm"], c: 2 },
+            
+            // TERMINOLOGY (Traditional vs RLA)
+            { q: "The RLA term for 'Heel Strike' is:", a: ["Initial Contact", "Loading Response", "Midstance", "Terminal Stance"], c: 0 },
+            { q: "The RLA term for 'Foot Flat' is:", a: ["Initial Contact", "Loading Response", "Midstance", "Pre-swing"], c: 1 },
+            { q: "The RLA term for 'Heel Off' is:", a: ["Terminal Stance", "Pre-swing", "Initial Swing", "Midswing"], c: 0 },
+            { q: "The RLA term for 'Toe Off' is:", a: ["Terminal Stance", "Pre-swing", "Initial Swing", "Terminal Swing"], c: 1 },
+            { q: "Midswing occurs when the reference limb is:", a: ["Directly under the body", "Advancing past the stance limb", "Striking the ground", "Preparing for push-off"], c: 1 },
+            
+            // MUSCLE ACTIVITY & NERVES
+            { q: "Which nerve injury causes a 'Trendelenburg Gait'?", a: ["Inferior Gluteal", "Superior Gluteal", "Femoral", "Obturator"], c: 1 },
+            { q: "A 'Backward Lurch' is a compensation for weakness in which muscle?", a: ["Gluteus Medius", "Quadriceps", "Gluteus Maximus", "Gastroc"], c: 2 },
+            { q: "A 'Forward Lurch' or knee buckling is a sign of which muscle weakness?", a: ["Gluteus Maximus", "Quadriceps", "Hamstrings", "Dorsiflexors"], c: 1 },
+            { q: "Which nerve is responsible for the 'Gluteus Maximus Gait'?", a: ["Superior Gluteal", "Inferior Gluteal", "Sciatic", "Femoral"], c: 1 },
+            { q: "Injury to the Deep Peroneal Nerve during the stance phase causes:", a: ["Foot Drop", "Foot Slap", "Steppage Gait", "Vaulting"], c: 1 },
+            { q: "Injury to the Deep Peroneal Nerve during the swing phase causes:", a: ["Foot Slap", "Foot Drop", "Calamity Gait", "Trendelenburg"], c: 1 },
+            { q: "What nerve is injured in a patient with a 'Quadriceps Gait'?", a: ["Femoral", "Obturator", "Tibial", "Common Peroneal"], c: 0 },
+            
+            // DEVIATIONS & COMPENSATIONS
+            { q: "In a 'Compensated' Trendelenburg Gait, the patient leans their trunk:", a: ["Towards the weak side", "Away from the weak side", "Forward", "Backward"], c: 0 },
+            { q: "An 'Uncompensated' Trendelenburg Gait is characterized by:", a: ["Lateral trunk lean", "Pelvic drop on the opposite side", "Knee hyperextension", "Vaulting"], c: 1 },
+            { q: "A 'Waddling Gait' is typically a result of (B) weakness in which muscle?", a: ["Gluteus Maximus", "Gluteus Medius", "Iliopsoas", "Quadriceps"], c: 1 },
+            { q: "A 'Steppage Gait' (excessive hip/knee flexion) is a compensation for:", a: ["Weak Gluteus Medius", "Weak Dorsiflexors (Foot drop)", "Weak Quads", "Spastic Gastroc"], c: 1 },
+            { q: "Vaulting is a compensation seen in the:", a: ["Stance limb to clear the swing limb", "Swing limb to clear the stance limb", "Weak side", "Painful side"], c: 0 },
+            { q: "Circumduction is often used to compensate for:", a: ["Weak Hip Flexors", "Weak Quads", "Weak Gastroc", "Weak Hip Extensors"], c: 0 },
+            { q: "Calf weakness (weak push-off) often results in which deviation?", a: ["Vaulting", "Flat foot gait / No heel-off", "Backward lurch", "Trendelenburg"], c: 1 },
+            
+            // PATHOLOGICAL GAITS
+            { q: "A 'Festinating Gait' involves progressively increasing speed and difficulty stopping. This is seen in:", a: ["CVA", "Parkinson's", "SCI", "Cerebral Palsy"], c: 1 },
+            { q: "An 'Antalgic Gait' is characterized by:", a: ["Shortened stance phase on painful limb", "Longer stance phase on painful limb", "High steppage", "Increased velocity"], c: 0 },
+            { q: "Which gait is characterized by 'En bloc' movement (head, arms, trunk act as a unit)?", a: ["Ataxic Gait", "Parkinsonian Gait", "Hemiplegic Gait", "Scissor Gait"], c: 1 },
+            { q: "A 'Scissor Gait' (legs crossing midline) is typical of:", a: ["Spastic Paraplegia / CP", "Cerebellum injury", "L5 nerve root injury", "Sciatica"], c: 0 },
+            { q: "Ataxic Gait (staggering and wide BOS) is caused by injury to the:", a: ["Basal Ganglia", "Cerebellum", "Frontal Lobe", "Occipital Lobe"], c: 1 },
+            
+            // JOINT KINEMATICS & REQUIREMENTS
+            { q: "How many degrees of Great Toe extension are required for normal push-off?", a: ["10-20 degrees", "60-70 degrees", "90 degrees", "0 degrees"], c: 1 },
+            { q: "What is the maximum knee flexion required during the swing phase?", a: ["30 degrees", "60 degrees", "90 degrees", "120 degrees"], c: 1 },
+            { q: "During Midstance, the ankle is in which position?", a: ["15 degrees Plantarflexion", "Neutral (0 degrees)", "20 degrees Dorsiflexion", "30 degrees Plantarflexion"], c: 1 },
+            { q: "What hip position is required at Heel Strike?", a: ["20-30 degrees Flexion", "10 degrees Extension", "Neutral", "45 degrees Flexion"], c: 0 },
+            
+            // DETERMINANTS & MISC
+            { q: "Which determinant of gait involves the swing side moving forward and stance side moving backward?", a: ["Pelvic Rotation", "Pelvic Tilt", "Lateral Pelvic Shift", "Knee-Ankle Interaction"], c: 0 },
+            { q: "Normal Pelvic Rotation is a total of:", a: ["4 degrees", "8 degrees", "15 degrees", "20 degrees"], c: 1 },
+            { q: "Pelvic tilt during gait lowers the COG by how many degrees?", a: ["5 degrees", "10 degrees", "15 degrees", "20 degrees"], c: 0 },
+            { q: "A 'Double Tapping Sign' is associated with:", a: ["Parkinson's", "Posterior Column Deficit", "Anterior Cord Syndrome", "CVA"], c: 1 },
+            { q: "What is the primary functional task of 'Weight Acceptance'?", a: ["Initial Contact & Loading Response", "Midstance", "Pre-swing", "Initial Swing"], c: 0 },
+            { q: "Limb advancement tasks include:", a: ["Heel strike", "Loading response", "Swing phase and Pre-swing", "Midstance"], c: 2 },
+            { q: "Cadence is defined as:", a: ["Distance per second", "Steps per minute", "Step length x cadence", "Degree of toe-out"], c: 1 },
+            { q: "Velocity is the product of:", a: ["Step width and Step length", "Step length and Cadence", "Stride length and Step width", "None of the above"], c: 1 },
+            { q: "Which shoe modification is used for a 'Festinating Gait'?", a: ["Heel wedge", "Toe wedge", "Lateral flare", "Medial post"], c: 1 }
         ];
 
-        let currentQuestionIndex = 0;
-        let userAnswers = new Array(questionsDB.length).fill(null);
-        let examSubmitted = false;
-        let timeLeft = 40 * 60;
-        let timerInterval;
+        let currentIdx = 0;
+        let answers = new Array(questionsDB.length).fill(null);
+        let time = 60 * 60;
+        let submitted = false;
 
         function startTimer() {
-            timerInterval = setInterval(() => {
-                const min = Math.floor(timeLeft / 60);
-                const sec = timeLeft % 60;
-                document.getElementById('timer-display').textContent = `Time: ${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-                if (timeLeft <= 0) { clearInterval(timerInterval); submitExam(); }
-                timeLeft--;
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if(submitted) { clearInterval(interval); return; }
+                const m = Math.floor(time / 60);
+                const s = time % 60;
+                timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if(time <= 0) { clearInterval(interval); submit(); }
+                time--;
             }, 1000);
         }
 
-        function renderQuestion() {
-            const q = questionsDB[currentQuestionIndex];
-            document.getElementById('question-text').textContent = q.question;
-            document.getElementById('question-category').textContent = q.category;
-            document.getElementById('question-counter').textContent = `Question ${currentQuestionIndex + 1} of ${questionsDB.length}`;
-            document.getElementById('progress-fill').style.width = `${((currentQuestionIndex + 1) / questionsDB.length) * 100}%`;
-
+        function render() {
+            const q = questionsDB[currentIdx];
+            document.getElementById('question-text').textContent = `${currentIdx + 1}. ${q.q}`;
+            document.getElementById('question-counter').textContent = `Question ${currentIdx + 1}/${questionsDB.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questionsDB.length) * 100}%`;
+            
             const list = document.getElementById('options-list');
             list.innerHTML = '';
-            q.options.forEach((opt, i) => {
+            q.a.forEach((opt, i) => {
                 const btn = document.createElement('button');
-                btn.className = `option-btn w-full text-left p-4 border-2 rounded-xl transition font-medium ${userAnswers[currentQuestionIndex] === i ? 'selected' : 'border-slate-200'}`;
-                btn.innerHTML = `<span class="inline-block w-8 font-bold">${String.fromCharCode(65 + i)}.</span> ${opt}`;
-                if (!examSubmitted) { 
-                    btn.onclick = () => { userAnswers[currentQuestionIndex] = i; renderQuestion(); }; 
+                btn.className = `option-btn w-full text-left p-5 border-2 rounded-2xl transition-all duration-200 flex items-center gap-4 ${answers[currentIdx] === i ? 'selected' : 'border-slate-100 bg-slate-50'}`;
+                btn.innerHTML = `<span class="h-8 w-8 flex items-center justify-center rounded-full bg-white border font-bold text-slate-400">${String.fromCharCode(65+i)}</span> <span class="text-slate-700 font-medium">${opt}</span>`;
+                
+                if(!submitted) {
+                    btn.onclick = () => { answers[currentIdx] = i; render(); };
                 } else {
                     btn.disabled = true;
-                    if (i === q.correct) btn.classList.add('correct');
-                    if (userAnswers[currentQuestionIndex] === i && i !== q.correct) btn.classList.add('incorrect');
+                    if(i === q.c) btn.classList.add('correct');
+                    if(answers[currentIdx] === i && i !== q.c) btn.classList.add('incorrect');
                 }
                 list.appendChild(btn);
             });
 
-            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
-            document.getElementById('next-btn').textContent = currentQuestionIndex === questionsDB.length - 1 ? 'Finish' : 'Next';
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').textContent = currentIdx === questionsDB.length - 1 ? (submitted ? 'View Results' : 'Submit Exam') : 'Next Question';
         }
 
         document.getElementById('next-btn').onclick = () => {
-            if (currentQuestionIndex < questionsDB.length - 1) { currentIdx = ++currentQuestionIndex; renderQuestion(); }
-            else if (!examSubmitted) { submitExam(); }
+            if(currentIdx < questionsDB.length - 1) {
+                currentIdx++;
+                render();
+            } else {
+                if(!submitted) submit();
+                else showResults();
+            }
         };
-        document.getElementById('prev-btn').onclick = () => { if (currentQuestionIndex > 0) { currentIdx = --currentQuestionIndex; renderQuestion(); } };
 
-        function submitExam() {
-            examSubmitted = true;
-            clearInterval(timerInterval);
-            document.getElementById('quiz-container').classList.add('hidden');
-            document.getElementById('results-section').classList.remove('hidden');
-            let score = 0;
-            userAnswers.forEach((ans, i) => { if (ans === questionsDB[i].correct) score++; });
-            document.getElementById('score-display').textContent = `${score}/${questionsDB.length}`;
-            document.getElementById('percentage-display').textContent = `${Math.round((score/questionsDB.length)*100)}%`;
+        document.getElementById('prev-btn').onclick = () => {
+            if(currentIdx > 0) { currentIdx--; render(); }
+        };
+
+        function submit() {
+            if(!confirm("Are you sure you want to submit?")) return;
+            submitted = true;
+            showResults();
         }
 
-        renderQuestion();
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const res = document.getElementById('results-section');
+            res.classList.remove('hidden');
+            let score = 0;
+            answers.forEach((ans, i) => { if(ans === questionsDB[i].c) score++; });
+            document.getElementById('score-display').textContent = `${score}/${questionsDB.length}`;
+            
+            const feedback = document.getElementById('feedback');
+            if(score >= 45) feedback.textContent = "Excellent! You are ready for the board exam! 🌟";
+            else if(score >= 35) feedback.textContent = "Good job! Just a little more review on deviations. 📚";
+            else feedback.textContent = "Keep studying! Focus on the nerve injuries and phases. 💪";
+        }
+
         startTimer();
+        render();
     </script>
 </body>
 </html>
