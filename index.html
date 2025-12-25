@@ -5,20 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PT Study Hub - Mich IE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body class="bg-slate-100 flex flex-col items-center justify-center min-h-screen p-6">
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 text-center">
-        <h1 class="text-3xl font-black text-slate-900 mb-2">PT STUDY HUB</h1>
-        <p class="text-indigo-600 font-bold text-sm mb-10 uppercase tracking-widest">Mich IE • Board Prep</p>
-        
-        <div class="space-y-4">
-            <a href="neuro-exam.html" class="block w-full p-5 bg-blue-600 text-white font-bold rounded-2xl shadow-md hover:bg-blue-700 transition transform hover:-translate-y-1">🧠 Neurology (CVA/SCI)</a>
-            <a href="gait-exam.html" class="block w-full p-5 bg-emerald-600 text-white font-bold rounded-2xl shadow-md hover:bg-emerald-700 transition transform hover:-translate-y-1">🚶‍♂️ Gait Analysis</a>
-            <a href="neuroana-exam.html" class="block w-full p-5 bg-violet-600 text-white font-bold rounded-2xl shadow-md hover:bg-violet-700 transition transform hover:-translate-y-1">🔬 Neuroanatomy (Omar)</a>
-            <a href="pulmo-exam.html" class="block w-full p-5 bg-orange-600 text-white font-bold rounded-2xl shadow-md hover:bg-orange-700 transition transform hover:-translate-y-1">🫁 Pulmonary & Vascular</a>
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
+    <div class="max-w-md w-full glass rounded-3xl shadow-2xl p-8 text-center border border-white">
+        <div class="mb-10">
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight">PT STUDY HUB</h1>
+            <div class="h-1 w-20 bg-indigo-600 mx-auto mt-2 rounded-full"></div>
+            <p class="text-indigo-600 font-bold text-xs mt-4 uppercase tracking-[0.2em]">Mich IE • Board Prep Edition</p>
         </div>
         
-        <p class="mt-12 text-slate-400 text-xs italic">"Trust the process. PTRP soon!"</p>
+        <div class="space-y-4">
+            <a href="neuro-exam.html" class="group block w-full p-5 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-1 active:scale-95">
+                <div class="flex items-center justify-between">
+                    <span>🧠 Neurology (CVA/SCI)</span>
+                    <span class="opacity-50 group-hover:opacity-100">→</span>
+                </div>
+            </a>
+
+            <a href="gait-exam.html" class="group block w-full p-5 bg-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-700 transition transform hover:-translate-y-1 active:scale-95">
+                <div class="flex items-center justify-between">
+                    <span>🚶‍♂️ Gait Analysis</span>
+                    <span class="opacity-50 group-hover:opacity-100">→</span>
+                </div>
+            </a>
+
+            <a href="neuroana-exam.html" class="group block w-full p-5 bg-violet-600 text-white font-bold rounded-2xl shadow-lg hover:bg-violet-700 transition transform hover:-translate-y-1 active:scale-95">
+                <div class="flex items-center justify-between">
+                    <span>🔬 Neuroanatomy (Sir Omar)</span>
+                    <span class="opacity-50 group-hover:opacity-100">→</span>
+                </div>
+            </a>
+
+            <a href="pulmo-exam.html" class="group block w-full p-5 bg-orange-600 text-white font-bold rounded-2xl shadow-lg hover:bg-orange-700 transition transform hover:-translate-y-1 active:scale-95">
+                <div class="flex items-center justify-between">
+                    <span>🫁 Pulmonary & Vascular</span>
+                    <span class="opacity-50 group-hover:opacity-100">→</span>
+                </div>
+            </a>
+
+            <a href="cardio-exam.html" class="group block w-full p-5 bg-red-600 text-white font-bold rounded-2xl shadow-lg hover:bg-red-700 transition transform hover:-translate-y-1 active:scale-95">
+                <div class="flex items-center justify-between">
+                    <span>❤️ Cardiology & PVD</span>
+                    <span class="opacity-50 group-hover:opacity-100">→</span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="mt-12">
+            <p class="text-slate-400 text-xs italic font-medium">"Focus on the goal. PTRP 2024!"</p>
+            <p class="text-slate-300 text-[10px] mt-1 uppercase tracking-widest">Total Questions: 250</p>
+        </div>
     </div>
 </body>
 </html>
