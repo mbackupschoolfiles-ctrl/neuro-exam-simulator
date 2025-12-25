@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardio 50 - Mich IE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn:hover:not(:disabled) { background-color: #f0fdf4; border-color: #16a34a; }
+        .selected { border-color: #16a34a; background-color: #dcfce7; font-weight: bold; }
+        .correct { background-color: #d1fae5 !important; border-color: #059669 !important; color: #065f46; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans">
+    <div id="app" class="max-w-4xl mx-auto px-4 py-6">
+        <header class="text-center mb-6 bg-white p-6 rounded-2xl shadow-sm border-b-4 border-emerald-500">
+            <h1 class="text-3xl font-black text-slate-800 uppercase italic">Cardiology & PVD 50</h1>
+            <p class="text-emerald-600 font-bold tracking-widest text-xs mt-1">Mich IE • Gold Rank Review Prep</p>
+        </header>
+
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <span id="question-counter" class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">Question 1/50</span>
+                <div id="timer" class="text-emerald-700 font-mono font-bold text-lg bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-100">60:00</div>
+            </div>
+            
+            <div class="w-full bg-slate-100 rounded-full h-3 mb-8">
+                <div id="progress-bar" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 2%"></div>
+            </div>
+
+            <div id="question-content" class="min-h-[300px]">
+                <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-snug mb-8">Loading...</h2>
+                <div id="options-list" class="grid gap-3"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
+                <button id="prev-btn" class="px-6 py-3 bg-slate-200 text-slate-600 rounded-xl font-bold disabled:opacity-30">Previous</button>
+                <button id="next-btn" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 active:scale-95 transition">Next Question</button>
+            </div>
+        </div>
+
+        <div id="results-section" class="hidden bg-white rounded-3xl shadow-2xl p-10 text-center">
+            <h2 class="text-5xl font-black text-slate-900 mb-4 italic">FINAL SCORE</h2>
+            <div id="score-display" class="text-8xl font-black text-emerald-600 my-8">0/50</div>
+            <p id="feedback" class="text-lg text-slate-500 mb-10 font-medium italic"></p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="location.reload()" class="px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg">Retake 50</button>
+                <a href="index.html" class="px-10 py-4 bg-slate-200 text-slate-700 rounded-2xl font-bold text-lg">Main Menu</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionsDB = [
+            // ANATOMY & PHYSIOLOGY
+            { q: "What is the normal amount of pericardial fluid found in the heart?", a: ["10 ml", "50 ml", "100 ml", "200 ml"], c: 1 },
+            { q: "An increase in pericardial fluid that compresses the heart is known as:", a: ["Pericarditis", "Pericardial friction rub", "Cardiac tamponade", "Myocardial Infarction"], c: 2 },
+            { q: "Which heart valve is located on the right side between the atrium and ventricle?", a: ["Bicuspid valve", "Mitral valve", "Tricuspid valve", "Aortic valve"], c: 2 },
+            { q: "What is the primary pacemaker of the heart?", a: ["AV Node", "Bundle of His", "Purkinje Fibers", "SA Node (Node of Keith & Flack)"], c: 3 },
+            { q: "Which artery supplies the majority of the Left Ventricle (LV) and is the most commonly occluded?", a: ["Right Coronary Artery", "Left Anterior Descending Artery (LADA)", "Circumflex Artery", "Brachiocephalic Artery"], c: 1 },
+            { q: "The 'lub' sound (S1) is caused by the closure of which valves?", a: ["Semilunar valves", "AV valves (Tricuspid/Mitral)", "Aortic valve only", "Pulmonic valve only"], c: 1 },
+            { q: "A 'ventricular gallop' (S3) is a rapid filling sound often heard in which condition?", a: ["Hypertension", "Congestive Heart Failure (CHF)", "Myocardial Infarction", "Mitral Valve Prolapse"], c: 1 },
+
+            // HEMODYNAMICS & ACTION POTENTIAL
+            { q: "What is the resting membrane potential of cardiac muscle?", a: ["-70 mV", "-85 mV", "-90 mV", "0 mV"], c: 1 },
+            { q: "Phase 2 of the Cardiac Action Potential is known as the Plateau phase. This is caused by the inward current of:", a: ["Sodium (Na+)", "Potassium (K+)", "Calcium (Ca2+)", "Magnesium"], c: 2 },
+            { q: "What is the formula for Stroke Volume (SV)?", a: ["EDV + ESV", "CO / HR", "EDV - ESV", "SBP - DBP"], c: 2 },
+            { q: "The normal value for Cardiac Output (CO) at rest is:", a: ["2-3 L", "4-6 L", "8-10 L", "70 mL"], c: 1 },
+            { q: "The initial stretching of the heart before contraction is called:", a: ["Afterload", "Preload (EDV)", "Contractility", "Stroke Volume"], c: 1 },
+            { q: "Afterload is the force required to open which valves?", a: ["AV valves", "Semilunar valves", "Mitral valve", "Tricuspid valve"], c: 1 },
+
+            // ECG & HEART BLOCKS
+            { q: "Which wave on the ECG represents Atrial Depolarization?", a: ["P wave", "QRS complex", "T wave", "U wave"], c: 0 },
+            { q: "An ECG shows a 'wide, bizarre, odd QRS complex'. This is characteristic of:", a: ["Atrial Fibrillation", "ST elevation", "Premature Ventricular Contraction (PVC)", "First degree Heart Block"], c: 2 },
+            { q: "A 'prolonged PR interval' is indicative of which heart block?", a: ["1st degree", "2nd degree Mobitz I", "2nd degree Mobitz II", "3rd degree"], c: 0 },
+            { q: "Elevation of the ST segment is a classic sign of:", a: ["Myocardial Ischemia", "Myocardial Infarction (Tissue death)", "Normal heart", "Hypokalemia"], c: 1 },
+
+            // VALVES & AUSCULTATION
+            { q: "Where is the best location to auscultate the Aortic valve?", a: ["2nd Left ICS", "2nd Right ICS Sternal border", "5th Left ICS Midclavicular line", "4th Left ICS Sternal border"], c: 1 },
+            { q: "Which valve is auscultated at the 5th Left ICS Midclavicular line?", a: ["Aortic", "Pulmonic", "Mitral (Bicuspid)", "Tricuspid"], c: 2 },
+            { q: "Barlow’s Syndrome and 'Click Murmur Syndrome' are alternative names for:", a: ["Aortic Stenosis", "Mitral Valve Prolapse", "Tricuspid Insufficiency", "Pulmonary Embolism"], c: 1 },
+
+            // HEART DISEASES (CAD, CHF, ANGINA)
+            { q: "What is the maximum number of Nitroglycerin tablets a patient can take for chronic stable angina?", a: ["1", "2", "3", "5"], c: 2 },
+            { q: "Which type of angina occurs at rest, is caused by coronary artery spasm, and is more common in females?", a: ["Chronic Stable Angina", "Unstable Angina", "Prinzmetal (Variant) Angina", "Nocturnal Angina"], c: 2 },
+            { q: "Bipedal edema, Ascites, and Distention of jugular veins are signs of:", a: ["Left-sided CHF", "Right-sided CHF", "Myocardial Infarction", "Pulmonary Edema"], c: 1 },
+            { q: "Manifestations such as Orthopnea, PND, and Pulmonary edema indicate:", a: ["Left-sided CHF", "Right-sided CHF", "DVT", "Varicose Veins"], c: 0 },
+            { q: "Which NYHA functional class represents patients with 'Marked limitation' of activity?", a: ["Class I", "Class II", "Class III", "Class IV"], c: 2 },
+
+            // PERIPHERAL VASCULAR DISEASES (PVD)
+            { q: "Which layer of the blood vessel is the only layer present in all vessels?", a: ["Tunica Media", "Tunica Adventitia", "Endothelium (Tunica Intima)", "Smooth muscle"], c: 2 },
+            { q: "Intermittent Claudication is the hallmark of which disease?", a: ["Varicose Veins", "Atherosclerosis Obliterans (ASO)", "Lymphedema", "DVT"], c: 1 },
+            { q: "The 'French Flag Sign' (Pallor, Cyanosis, Rubor) is associated with:", a: ["Buerger's Disease", "Raynaud's Phenomenon", "Chronic Venous Insufficiency", "Cellulitis"], c: 1 },
+            { q: "Thromboangiitis Obliterans (TAO) is also known as:", a: ["Buerger's Disease", "Milroy's Disease", "Raynaud's Disease", "ASO"], c: 0 },
+            { q: "Which triad describes the causes of DVT (Hypercoagulability, Intimal damage, Stasis)?", a: ["Beck's Triad", "Virchow's Triad", "Cushing's Triad", "Charcot's Triad"], c: 1 },
+            { q: "What is the most serious complication of Deep Venous Thrombosis?", a: ["Varicose veins", "Lymphedema", "Pulmonary Embolism", "Gangrene"], c: 2 },
+            { q: "An ABI (Ankle Brachial Index) of 0.70 indicates:", a: ["Normal circulation", "Mild arterial disease", "Moderate disease (rest pain)", "Severe arterial disease"], c: 1 },
+            { q: "Stemmer's Test is used to assess for:", a: ["DVT", "Lymphedema", "Varicose veins", "Arterial insufficiency"], c: 1 },
+            { q: "Venous ulcers are typically found near the:", a: ["Lateral malleolus", "Anterior tibia", "Medial malleolus", "Sole of the foot"], c: 2 },
+
+            // CARDIAC REHAB
+            { q: "According to Braddom, what is the Discharge MET level for Phase I (In-patient)?", a: ["2 METs", "5 METs", "9 METs", "12 METs"], c: 1 },
+            { q: "In Sullivan's Cardiac Rehab, which level involves 'Commode privileges' and 'Sitting'?", a: ["Level 1", "Level 2", "Level 4", "Level 6"], c: 1 },
+            { q: "Karvonen's Formula is used to calculate:", a: ["Blood Pressure", "Stroke Volume", "Target Heart Rate (THR)", "MET level"], c: 2 },
+            { q: "Which of the following is a criterion for TERMINATING exercise?", a: ["Heart rate of 100 bpm", "Resting BP of 200/100 mmHg", "Oxygen saturation of 95%", "Occasional sweating"], c: 1 },
+            { q: "What is the best initial exercise for patients with claudication or post-MI?", a: ["Heavy weightlifting", "Brisk walking (10-15 mins daily)", "Sprinting", "Swimming"], c: 1 },
+            
+            // CONGENITAL & MISC
+            { q: "The 'PARI' mnemonic (Pulmonary stenosis, Aorta overriding, RV hypertrophy, IV septal defect) refers to:", a: ["Patent Ductus Arteriosus", "Atrial Septal Defect", "Tetralogy of Fallot", "Coarctation of Aorta"], c: 2 },
+            { q: "Which enzyme is the most specific for myocardial damage and peaks within 12-24 hours?", a: ["SGOT", "CKMB", "LDH", "Troponin"], c: 1 },
+            { q: "The 'Levine Sign' is associated with:", a: ["Appendicitis", "Angina/Chest Pain", "DVT", "Stroke"], c: 1 },
+            { q: "Referred cardiac pain to the left arm follows which nerve distribution?", a: ["Radial nerve", "Median nerve", "Ulnar nerve", "Axillary nerve"], c: 2 },
+            { q: "Which patient is most prone to 'Silent Ischemia'?", a: ["Athlete", "Smoker", "Patient with Diabetes Mellitus", "Elderly patient"], c: 2 },
+            { q: "In fetal circulation, what connects the pulmonary artery to the aorta?", a: ["Foramen Ovale", "Ductus Arteriosus", "Ductus Venosus", "Umbilical Vein"], c: 1 },
+            { q: "A 'dusky red' discoloration when the leg is in a dependent position is called:", a: ["Pallor", "Cyanosis", "Dependent Rubor", "Pigmentation"], c: 2 },
+            { q: "Which surgical procedure involves 're-routing' blood using the Great Saphenous Vein?", a: ["PTCA", "IV Stent", "CABG", "Endarterectomy"], c: 2 },
+            { q: "The 'capacitance vessels' that carry 60-64% of the blood are the:", a: ["Arteries", "Arterioles", "Capillaries", "Veins"], c: 3 },
+            { q: "Aortic Coarctation typically presents with:", a: ["Low BP in arms", "Increased BP in Upper Extremities", "Cyanosis", "Painless legs"], c: 1 },
+            { q: "What is the relieving factor for Pericarditis chest pain?", a: ["Lying supine", "Leaning forward/Kneeling on all 4s", "Deep breathing", "Walking"], c: 1 }
+        ];
+
+        let currentIdx = 0;
+        let answers = new Array(questionsDB.length).fill(null);
+        let time = 60 * 60;
+        let submitted = false;
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if(submitted) { clearInterval(interval); return; }
+                const m = Math.floor(time / 60);
+                const s = time % 60;
+                timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if(time <= 0) { clearInterval(interval); submit(); }
+                time--;
+            }, 1000);
+        }
+
+        function render() {
+            const q = questionsDB[currentIdx];
+            document.getElementById('question-text').textContent = `${currentIdx + 1}. ${q.q}`;
+            document.getElementById('question-counter').textContent = `Question ${currentIdx + 1}/${questionsDB.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questionsDB.length) * 100}%`;
+            
+            const list = document.getElementById('options-list');
+            list.innerHTML = '';
+            q.a.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-5 border-2 rounded-2xl transition flex items-center gap-4 ${answers[currentIdx] === i ? 'selected' : 'border-slate-100 bg-slate-50'}`;
+                btn.innerHTML = `<span class="h-8 w-8 flex items-center justify-center rounded-full bg-white border font-bold text-slate-400">${String.fromCharCode(65+i)}</span> <span class="text-slate-700 font-medium">${opt}</span>`;
+                
+                if(!submitted) {
+                    btn.onclick = () => { answers[currentIdx] = i; render(); };
+                } else {
+                    btn.disabled = true;
+                    if(i === q.c) btn.classList.add('correct');
+                    if(answers[currentIdx] === i && i !== q.c) btn.classList.add('incorrect');
+                }
+                list.appendChild(btn);
+            });
+
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').textContent = currentIdx === questionsDB.length - 1 ? (submitted ? 'Results' : 'Submit') : 'Next Question';
+        }
+
+        document.getElementById('next-btn').onclick = () => {
+            if(currentIdx < questionsDB.length - 1) { currentIdx++; render(); }
+            else { if(!submitted) submit(); else showResults(); }
+        };
+
+        document.getElementById('prev-btn').onclick = () => { if(currentIdx > 0) { currentIdx--; render(); } };
+
+        function submit() {
+            if(!confirm("Submit Cardiology & PVD exam?")) return;
+            submitted = true;
+            showResults();
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            let score = 0;
+            answers.forEach((ans, i) => { if(ans === questionsDB[i].c) score++; });
+            document.getElementById('score-display').textContent = `${score}/${questionsDB.length}`;
+            
+            const feedback = document.getElementById('feedback');
+            if(score >= 45) feedback.textContent = "Incredible! You are a Cardiology Master! ❤️";
+            else if(score >= 35) feedback.textContent = "Well done! Review the ECG and Rehab phases again. 🏥";
+            else feedback.textContent = "Keep studying! Focus on the differences between ASO, TAO, and CVI. 📚";
+        }
+
+        startTimer();
+        render();
+    </script>
+</body>
+</html>
