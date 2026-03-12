@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedia 50 - Mich IE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn:hover:not(:disabled) { background-color: #fff1f2; border-color: #f43f5e; }
+        .selected { border-color: #f43f5e; background-color: #fff1f2; font-weight: bold; }
+        .correct { background-color: #d1fae5 !important; border-color: #059669 !important; color: #065f46; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans">
+    <div id="app" class="max-w-4xl mx-auto px-4 py-6">
+        <header class="text-center mb-6 bg-white p-6 rounded-2xl shadow-sm border-b-4 border-rose-500">
+            <h1 class="text-3xl font-black text-slate-800 uppercase italic">Pediatrics & Development 50</h1>
+            <p class="text-rose-600 font-bold tracking-widest text-xs mt-1">Mich IE • Gold Rank Review Prep</p>
+        </header>
+
+        <div id="quiz-container" class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <span id="question-counter" class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-bold">Question 1/50</span>
+                <div id="timer" class="text-rose-700 font-mono font-bold text-lg bg-rose-50 px-3 py-1 rounded-lg border border-rose-100">60:00</div>
+            </div>
+            
+            <div class="w-full bg-slate-100 rounded-full h-3 mb-8">
+                <div id="progress-bar" class="bg-rose-500 h-3 rounded-full transition-all duration-500" style="width: 2%"></div>
+            </div>
+
+            <div id="question-content" class="min-h-[300px]">
+                <h2 id="question-text" class="text-xl font-bold text-slate-800 leading-snug mb-8">Loading...</h2>
+                <div id="options-list" class="grid gap-3"></div>
+                <div id="rationale-box" class="hidden mt-6 p-4 bg-slate-50 border-l-4 border-rose-500 text-slate-700 italic text-sm"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
+                <button id="prev-btn" class="px-6 py-3 bg-slate-200 text-slate-600 rounded-xl font-bold disabled:opacity-30">Previous</button>
+                <button id="next-btn" class="px-8 py-3 bg-rose-600 text-white rounded-xl font-bold shadow-lg shadow-rose-200 hover:bg-rose-700 active:scale-95 transition">Next Question</button>
+            </div>
+        </div>
+
+        <div id="results-section" class="hidden bg-white rounded-3xl shadow-2xl p-10 text-center">
+            <h2 class="text-5xl font-black text-slate-900 mb-4 italic">FINAL SCORE</h2>
+            <div id="score-display" class="text-8xl font-black text-rose-600 my-8">0/50</div>
+            <p id="feedback" class="text-lg text-slate-500 mb-10 font-medium italic"></p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="location.reload()" class="px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg">Retake Pedia</button>
+                <a href="index.html" class="px-10 py-4 bg-slate-200 text-slate-700 rounded-2xl font-bold text-lg">Main Menu</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionsDB = [
+            // BASIC CONCEPTS & TERMS
+            { q: "Which term refers to the quantitative increase in physical size and dimensions?", a: ["Development", "Growth", "Maturation", "Learning"], c: 1, r: "Growth is measurement/quantitative (Head cir, Ht, Wt)." },
+            { q: "At what point does 'Growth' typically halt/stop?", a: ["Adolescence", "Conception", "Birth", "Death"], c: 0, r: "Growth halts at adolescence (anatomical changes)." },
+            { q: "The refinement and acquisition of skills is defined as:", a: ["Growth", "Development", "Learning", "Maturation"], c: 1, r: "Development is the qualitative aspect/acquisition of skills." },
+            { q: "The 'Embryonic development' stage covers what timeframe?", a: ["First 2 weeks", "First 2 months", "3rd to 9th month", "After birth"], c: 1, r: "Embryonic: 1st 2 mos (organ formation)." },
+            { q: "What is the clinical indicator used for 'Gestational Age'?", a: ["Day of conception", "First day of Last Menstrual Period", "Date of first ultrasound", "Birth date"], c: 1, r: "Gestational Age (Menstrual Age) starts from the first day of the mother's LMP." },
+            { q: "What is the 'True Fetal Age'?", a: ["Gestational Age", "Chronological Age", "Conceptional Age", "Adjusted Age"], c: 2, r: "Conceptional Age is the true fetal age from the day of conception." },
+            { q: "An infant born at exactly 37 weeks AOG is classified as:", a: ["Pre-term", "Full-term", "Post-term", "Very low birth weight"], c: 0, r: "Pre-term is ≤ 37 weeks; Full term is 38-42 weeks." },
+            { q: "Infants born at <32 weeks AOG are at a significantly increased risk for:", a: ["Erb's Palsy", "Cerebral Palsy (CP)", "Down Syndrome", "Scurvy"], c: 1, r: "Notes specify <32 weeks increases risk of CP." },
+            
+            // PRINCIPLES & TRENDS
+            { q: "The trend of development that occurs from head to tail is:", a: ["Proximodistal", "Cephalocaudal", "Mass to Specific", "Asynchronous"], c: 1, r: "Cephalocaudal = Head to Tail." },
+            { q: "Why can a child use their shoulder before their fingers? This is due to which trend?", a: ["Cephalocaudal", "Proximodistal", "Simple to Complex", "Optimal Period"], c: 1, r: "Proximodistal = Center/Midline to Extremities." },
+            { q: "Development that moves from whole-body movements to localized flinching is called:", a: ["Specific to Mass", "Mass to Specific", "Continuous process", "Asynchronous"], c: 1, r: "Mass to Specific: Whole body reacts before specific parts." },
+            { q: "Which growth curve system reaches 100% (adult size) first?", a: ["Genital", "Neural", "Lymphoid", "General"], c: 1, r: "Neural/Brain system reaches adult size earliest." },
+            { q: "A child born at 32 weeks is now 6 months old. What is the Adjusted Age?", a: ["3 months", "4 months", "5 months", "2 months"], c: 1, r: "8 weeks premature (2 mos). 6 mos - 2 mos = 4 months adjusted." },
+
+            // PIAGET SENSORIMOTOR
+            { q: "In Piaget's stages, 'Thumb sucking' as a repetitive action on one's own body is a:", a: ["Reflex", "Primary Circular Reaction", "Secondary Circular Reaction", "Tertiary Reaction"], c: 1, r: "Primary (1-4 mos): Actions focused on infant's own body." },
+            { q: "Playing with a rattle to hear it make noise (external objects) is a:", a: ["Primary Circular Reaction", "Secondary Circular Reaction", "Reflex", "Coordination of Schemata"], c: 1, r: "Secondary (4-8 mos): Interaction with external objects." },
+            { q: "At which Sensorimotor stage does 'Object Permanence' first emerge?", a: ["Stage 2", "Stage 4", "Stage 6", "Stage 1"], c: 1, r: "Coordination of Secondary Schemata (8-12 mos) = Object Permanence." },
+            { q: "Intentionality and active experimentation (trial and error) occurs in which stage?", a: ["Stage 3", "Stage 4", "Stage 5", "Stage 6"], c: 2, r: "Tertiary Circular Reactions (12-18 mos) = Active experimentation." },
+
+            // MILESTONES: 0-12 MONTHS
+            { q: "At what age does 'Midline Neck Control' usually occur?", a: ["1 month", "2 months", "3 months", "4 months"], c: 3, r: "4 months: Midline neck control and propped on forearms." },
+            { q: "A child sits with a 'High Guard' (propped on hands) at what age?", a: ["4 months", "5 months", "6 months", "7 months"], c: 2, r: "6 months: Sits with high guard/propped on hands." },
+            { q: "When is a child expected to sit alone steadily without support?", a: ["6 months", "7 months", "8 months", "9 months"], c: 1, r: "7 months: Sits alone steadily." },
+            { q: "The 'Pivot in Prone' milestone occurs at:", a: ["6 months", "7 months", "8 months", "9 months"], c: 2, r: "8 months: Pivot in prone and crawling." },
+            { q: "What is the primary motor milestone for a 9-month-old?", a: ["Creeping", "Walking alone", "Cruising", "Running"], c: 0, r: "9 months: Creeping (on all 4s)." },
+            { q: "At what age does a child 'Cruis' (walk sideways holding furniture)?", a: ["9 months", "10 months", "11 months", "12 months"], c: 2, r: "11 months: Cruising." },
+            { q: "A child is expected to walk alone with 'High Guard' and say 1 word at:", a: ["12 months", "14 months", "18 months", "2 years"], c: 1, r: "14 months: Walks alone with high guard + 1 word." },
+
+            // MILESTONES: 18 MONTHS - 7 YEARS
+            { q: "At what age does a child walk backward and hold a crayon at the 'butt end'?", a: ["14 months", "18 months", "2 years", "3 years"], c: 1, r: "18 months: Walks backward, butt-end grip, dumps raisins." },
+            { q: "Hand dominance is established and 'Toilet Training STARTS' at:", a: ["2 years", "3 years", "4 years", "5 years"], c: 0, r: "2 years: Hand dominance established, jumps on 2 feet, toilet training starts." },
+            { q: "At what age is a child 'Toilet TRAINED' and can ride a Tricycle?", a: ["2 years", "3 years", "4 years", "5 years"], c: 1, r: "3 years: Tricycle, alternating upstairs, toilet trained." },
+            { q: "When does the 'Plantar Arch' develop and 'Underhand throwing' begin?", a: ["3 years", "4 years", "5 years", "6 years"], c: 1, r: "4 years: Plantar arch, hops on 1 foot, underhand throw." },
+            { q: "A child can 'Skip', 'Tiptoe', and do 'Diagonal throwing' at:", a: ["4 years", "5 years", "6 years", "7 years"], c: 1, r: "5 years: Skips, counts 1-10, diagonal throwing." },
+            { q: "Mastery of tying shoe laces and riding a bicycle occurs at:", a: ["5 years", "6 years", "7 years", "8 years"], c: 1, r: "6 years: Bicycle, shoe laces, mature catch/throw." },
+            { q: "Refinement of skills like 'Combing Hair' is expected at:", a: ["5 years", "6 years", "7 years", "8 years"], c: 2, r: "7 years: Refinement of skills." },
+
+            // FINE MOTOR & MISC
+            { q: "A 3-cube bridge is built at what age?", a: ["2 years", "3 years", "4 years", "5 years"], c: 1, r: "3 years: 3-cube bridge." },
+            { q: "How many cubes can a 2-year-old stack?", a: ["2 cubes", "4 cubes", "6 cubes", "8 cubes"], c: 3, r: "2 years = 8 cubes." },
+            { q: "At 18 months, a child holds a crayon at the:", a: ["Full length", "Butt end", "Pencil shaft", "Between thumb/index"], c: 1, r: "18 months: Butt end grip." },
+            { q: "Which age identifies body parts and picture identification?", a: ["14 months", "18 months", "2 years", "3 years"], c: 1, r: "18 months: Identifies picture and body parts." },
+            { q: "At 4 years, a child can sit from supine:", a: ["With rotation", "Without rotating", "With help", "Only using arms"], c: 1, r: "4 years: Sits from supine without rotating." },
+            { q: "What is the expected word count for a 3-year-old?", a: ["1 word", "2 words", "3 words", "Fluent grammar"], c: 2, r: "3 years: 3 words (or 3-word sentences)." },
+            { q: "Fluent grammar and counting 1-10 are milestones for:", a: ["3 years", "4 years", "5 years", "6 years"], c: 2, r: "5 years: Fluent grammar, counts 1-10." },
+            { q: "At 14 months, a child removes garment and stacks how many cubes?", a: ["2 cubes", "4 cubes", "6 cubes", "8 cubes"], c: 0, r: "14 months: Stacks 2 cubes." },
+            { q: "Which trend explains why a child can lift their head before they can sit?", a: ["Proximodistal", "Cephalocaudal", "Specific to Mass", "Asynchronous"], c: 1, r: "Cephalocaudal (Head to Tail)." },
+            { q: "The unfolding of genetic potential is called:", a: ["Learning", "Adaptation", "Maturation", "Growth"], c: 2, r: "Maturation: Unfolding of genetic potential." },
+            { q: "In Piaget's Stage 6 (18-24 mos), 'Mental Combinations' allows for:", a: ["Reflexes", "Trial and Error", "Internalized thought/Symbolic play", "Rattles"], c: 2, r: "Stage 6: Mental combinations/Symbolic play." },
+            { q: "Development is a ____________ process.", a: ["Static", "Continuous", "Brief", "Non-linear"], c: 1, r: "Growth and development are continuous processes (Womb to Tomb)." },
+            { q: "Which system reaches adult size between 10-12 years and then declines?", a: ["Neural", "Lymphoid", "Genital", "General"], c: 1, r: "Lymphoid system peaks and then shrinks after puberty." },
+            { q: "At what age does a child start walking 'Alone with Low Guard'?", a: ["12 months", "14 months", "18 months", "2 years"], c: 2, r: "18 months: Walks alone with Low Guard." },
+            { q: "A child can 'Jump on both feet' at what age?", a: ["18 months", "2 years", "3 years", "4 years"], c: 1, r: "2 years: Jumps on both feet." },
+            { q: "Alternating UPSTAIRS occurs at 3 years. When does alternating DOWNSTAIRS occur?", a: ["3 years", "4 years", "5 years", "6 years"], c: 1, r: "4 years: Alternating downstairs." },
+            { q: "Which age uses a spoon well and pulls on a garment?", a: ["18 months", "2 years", "3 years", "4 years"], c: 1, r: "2 years: Uses spoon well, pulls on garment." },
+            { q: "Scribbles spontaneously is a milestone for:", a: ["12 months", "14 months", "18 months", "2 years"], c: 1, r: "14 months: Scribbles spontaneously." },
+            { q: "At 5 years, how long should a child balance on each foot?", a: ["2 seconds", "5 seconds", "10 seconds", "30 seconds"], c: 2, r: "5 years: Balance 10 seconds on each foot." }
+        ];
+
+        let currentIdx = 0;
+        let answers = new Array(questionsDB.length).fill(null);
+        let time = 60 * 60;
+        let submitted = false;
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if(submitted) { clearInterval(interval); return; }
+                const m = Math.floor(time / 60);
+                const s = time % 60;
+                timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if(time <= 0) { clearInterval(interval); submit(); }
+                time--;
+            }, 1000);
+        }
+
+        function render() {
+            const q = questionsDB[currentIdx];
+            document.getElementById('question-text').textContent = `${currentIdx + 1}. ${q.q}`;
+            document.getElementById('question-counter').textContent = `Question ${currentIdx + 1}/${questionsDB.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / questionsDB.length) * 100}%`;
+            
+            const list = document.getElementById('options-list');
+            const rationaleBox = document.getElementById('rationale-box');
+            list.innerHTML = '';
+            rationaleBox.classList.add('hidden');
+
+            q.a.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-5 border-2 rounded-2xl transition flex items-center gap-4 ${answers[currentIdx] === i ? 'selected' : 'border-slate-100 bg-slate-50'}`;
+                btn.innerHTML = `<span class="h-8 w-8 flex items-center justify-center rounded-full bg-white border font-bold text-slate-400">${String.fromCharCode(65+i)}</span> <span class="text-slate-700 font-medium">${opt}</span>`;
+                
+                if(!submitted) {
+                    btn.onclick = () => { answers[currentIdx] = i; render(); };
+                } else {
+                    btn.disabled = true;
+                    if(i === q.c) btn.classList.add('correct');
+                    if(answers[currentIdx] === i && i !== q.c) btn.classList.add('incorrect');
+                    rationaleBox.textContent = `Rationale: ${q.r}`;
+                    rationaleBox.classList.remove('hidden');
+                }
+                list.appendChild(btn);
+            });
+
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').textContent = currentIdx === questionsDB.length - 1 ? (submitted ? 'Results' : 'Submit') : 'Next Question';
+        }
+
+        document.getElementById('next-btn').onclick = () => {
+            if(currentIdx < questionsDB.length - 1) { currentIdx++; render(); }
+            else { if(!submitted) submit(); else showResults(); }
+        };
+
+        document.getElementById('prev-btn').onclick = () => { if(currentIdx > 0) { currentIdx--; render(); } };
+
+        function submit() {
+            if(!confirm("Submit Pediatrics & Development exam?")) return;
+            submitted = true;
+            render();
+            showResults();
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            let score = 0;
+            answers.forEach((ans, i) => { if(ans === questionsDB[i].c) score++; });
+            document.getElementById('score-display').textContent = `${score}/${questionsDB.length}`;
+            
+            const feedback = document.getElementById('feedback');
+            if(score >= 45) feedback.textContent = "Excellent! You have the milestones memorized! 👶✨";
+            else if(score >= 35) feedback.textContent = "Good job! Review the ages for stairs and grip types. 🍼";
+            else feedback.textContent = "Keep practicing! Focus on the differences between 18 months and 2 years. 📚";
+        }
+
+        startTimer();
+        render();
+    </script>
+</body>
+</html>
